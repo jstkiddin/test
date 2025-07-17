@@ -1,111 +1,80 @@
-import { Box, Button, Card, Link, Typography } from '@mui/material'
+import styled from 'styled-components'
+import { Box, Button, Typography } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 
 import { ProductType } from '../types/ProductType'
-import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 
-import { useEffect } from 'react'
-import { setProductsList } from '../features/productsSlice'
+import { StyledBox, Wrapper } from '../components/shared/StyledComponents'
+import ProductListCard from '../components/ProductCard/ProductListCard'
+import { useCallback, useState } from 'react'
+import { addProduct } from '../features/productsSlice'
+import ProductModal from '../components/modals/ProductModal'
 
 function ProductList() {
   const productList = useAppSelector(state => state.products.poductList)
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const [isAddOpen, setIsAddOpen] = useState<boolean>(false)
 
-  useEffect(() => {
-    fetch('http://localhost:3001/products')
-      .then(res => res.json())
-      .then(data => {
-        dispatch(setProductsList(data))
+  const toggleAddModal = useCallback(
+    () => setIsAddOpen(!isAddOpen),
+    [isAddOpen]
+  )
+  const handleAddConfirm = useCallback(
+    (product: ProductType) => {
+      fetch(`http://localhost:3001/products`, {
+        method: 'Post',
+      }).then(res => {
+        console.log(res)
+        if (res.ok) {
+          dispatch(addProduct(product))
+          setIsAddOpen(!isAddOpen)
+        }
       })
-  }, [dispatch])
+    },
+    [isAddOpen, dispatch]
+  )
 
   return (
     <Wrapper>
+      <ProductModal
+        open={isAddOpen}
+        handleClose={toggleAddModal}
+        handleChangesConfirm={handleAddConfirm}
+        title="Adding the item"
+      />
       <StyledBox>
-        <Button variant="contained">Add new</Button>
+        <Button
+          variant="contained"
+          endIcon={<AddIcon />}
+          onClick={toggleAddModal}
+        >
+          Add new
+        </Button>
       </StyledBox>
 
-      <StyledBox>
-        {productList.map((product: ProductType) => (
-          <StyledCard>
-            <Box>
-              <ProductInfo>
-                <ProductImage
-                  src={`${product.imageUrl}`}
-                  alt={product.name}
-                  loading="lazy"
-                />
-                <Box>
-                  <StyledLink onClick={() => navigate(product.id)}>
-                    {product.name}
-                  </StyledLink>
-                  <Typography>Count: {product.count}</Typography>
-                </Box>
-              </ProductInfo>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'end',
-                alignItems: 'center',
-              }}
-            >
-              <Button sx={{ height: 50 }} variant="outlined">
-                Delete
-              </Button>
-            </Box>
-          </StyledCard>
-        ))}
-      </StyledBox>
+      {productList.length && (
+        <ProductGrid>
+          {productList.map((product: ProductType) => (
+            <ProductListCard product={product} />
+          ))}
+        </ProductGrid>
+      )}
+
+      {!productList.length && (
+        <Typography>There's no elements. Add one</Typography>
+      )}
     </Wrapper>
   )
 }
 
 export default ProductList
 
-const StyledBox = styled(Box)`
-  width: 50%;
-  margin: 1rem;
-`
+const ProductGrid = styled(Box)`
+  position: relative;
 
-const StyledLink = styled(Link)`
-  &:hover {
-    cursor: pointer;
-  }
-`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 
-const ProductInfo = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`
-
-const Wrapper = styled(Box)`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-`
-
-const StyledCard = styled(Card)`
-  position: related;
-  padding: 1rem;
-
-  display: flex;
-  justify-content: space-between;
-`
-
-export const ProductImage = styled.img`
-  width: 100%;
-  max-width: 250px;
-  height: auto;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
+  gap: 1rem;
 `

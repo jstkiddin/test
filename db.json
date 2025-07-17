@@ -1,20 +1,23 @@
 {
-  "products":[{
-    "id": 1,
-    "imageUrl": "https://cdn.coloradoparent.com/2022/02/CPMAR22_GTK_Rainbow-Portrait.jpg",
-    "name": "Clay",
-    "count": 4,
-    "size": {
-    "width": 200,
-    "height": 200
-    },
-  "weight": "200g",
-  "comments": [{
-    "id": 1,
-    "productId": 1,
-    "description": "some text here",
-    "date": "14:00 22.08.2021"
-    }]
-  }]
-
+  "products": [
+    {
+      "id": "1",
+      "imageUrl": "https://cdn.coloradoparent.com/2022/02/CPMAR22_GTK_Rainbow-Portrait.jpg",
+      "name": "Clay",
+      "count": 4,
+      "size": {
+        "width": 200,
+        "height": 200
+      },
+      "weight": "200g",
+      "comments": [
+        {
+          "id": 1,
+          "productId": 1,
+          "description": "some text here",
+          "date": "14:00 22.08.2021"
+        }
+      ]
+    }
+  ]
 }

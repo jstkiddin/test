@@ -4,14 +4,10 @@ import { ProductType } from '../types/ProductType'
 interface ProductsState {
   poductList: ProductType[]
   currentProduct: ProductType | undefined
-  modalAdd: boolean
-  modalDelete: boolean
 }
 
 const initialState: ProductsState = {
   poductList: [],
-  modalAdd: false,
-  modalDelete: false,
   currentProduct: undefined,
 }
 
@@ -27,22 +23,23 @@ export const productsSlice = createSlice({
         state.poductList.find(
           (product: ProductType) => product.id === action.payload
         ) ?? undefined
-
-      console.log(action.payload, state.currentProduct)
     },
-    addProduct: state => {},
-    deleteProduct: state => {},
-    toggleAddModal: state => {},
-    toggleDeleteModal: state => {},
+    addProduct: (state, action: PayloadAction<ProductType>) => {
+      // const newProductList = state.poductList.filter(
+      //   (product: ProductType) => product.id !== action.payload
+      // )
+      // state.poductList = newProductList
+    },
+    deleteProduct: (state, action: PayloadAction<number>) => {
+      const newProductList = state.poductList.filter(
+        (product: ProductType) => product.id !== action.payload
+      )
+
+      state.poductList = newProductList
+    },
   },
 })
 
-export const {
-  setProductsList,
-  addProduct,
-  getProduct,
-  deleteProduct,
-  toggleAddModal,
-  toggleDeleteModal,
-} = productsSlice.actions
+export const { setProductsList, addProduct, getProduct, deleteProduct } =
+  productsSlice.actions
 export default productsSlice.reducer
